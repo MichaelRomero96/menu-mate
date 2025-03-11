@@ -1,12 +1,15 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createStaticNavigation } from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createStaticNavigation} from '@react-navigation/native';
 import HomeScreen from './screens/HomeScreen';
+import {PaperProvider} from 'react-native-paper';
 
-
-// enrutado de la app
 function App(): React.JSX.Element {
-  return <Navigation />;
+  return (
+    <PaperProvider>
+      <Navigation />
+    </PaperProvider>
+  );
 }
 
 const RootStack = createNativeStackNavigator({
