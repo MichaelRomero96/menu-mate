@@ -1,18 +1,18 @@
 interface CountriesResponse {
-  meals: Country[];
+  meals: MealsCountry[];
 }
 
 interface MealsResponse {
   meals: Meal[];
 }
 
-interface Meal {
+export interface Meal {
   strMeal: string;
   strMealThumb: string;
   idMeal: string;
 }
 
-interface Country {
+export interface MealsCountry {
   strArea: string;
 }
 
@@ -28,7 +28,7 @@ class MealDBApi {
     return `filter.php?${this.filters[filter]}=${value}`;
   }
 
-  public static async getCountries(): Promise<CountriesResponse> {
+  public static async getMealsCountries(): Promise<MealsCountry[]> {
     const url = `${this.baseURL}/list.php?a=list`;
     const res = await fetch(url);
 
@@ -36,13 +36,13 @@ class MealDBApi {
       throw new Error('Failed to fetch countries');
     }
 
-    const data = await res.json();
-    return data as CountriesResponse;
+    const data = await res.json() as CountriesResponse;
+    return data.meals;
   }
 
   public static async getMealsByCountry(
     country: string,
-  ): Promise<MealsResponse> {
+  ): Promise<Meal[]> {
     const url = `${this.baseURL}/${this.filterBy('area', country)}`;
     const res = await fetch(url);
 
@@ -50,8 +50,8 @@ class MealDBApi {
       throw new Error('Failed to fetch meals');
     }
 
-    const data = await res.json();
-    return data;
+    const data = await res.json() as MealsResponse;
+    return data.meals;
   }
 }
 

@@ -15,7 +15,7 @@ describe('MealDBApi', () => {
       json: async () => mockResponse,
     } as Response);
 
-    const result = await MealDBApi.getCountries();
+    const result = await MealDBApi.getMealsCountries();
     expect(fetch).toHaveBeenCalledWith('www.themealdb.com/api/json/v1/1/list.php?a=list');
     expect(result).toEqual(mockResponse);
   });
@@ -23,6 +23,6 @@ describe('MealDBApi', () => {
   test('getCountries should throw an error if fetch fails', async () => {
     jest.spyOn(global, 'fetch').mockResolvedValueOnce({ ok: false } as Response);
 
-    await expect(MealDBApi.getCountries()).rejects.toThrow('Failed to fetch countries');
+    await expect(MealDBApi.getMealsCountries()).rejects.toThrow('Failed to fetch countries');
   });
 });
