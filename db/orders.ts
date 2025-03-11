@@ -2,7 +2,7 @@ import db from '.';
 import { OrderStatus } from '../interfaces/orders';
 
 // Initialize orders table
-export const initOrdersTable = () => {
+export const prepareDB = () => {
   db.transaction(tx => {
     tx.executeSql(
       `CREATE TABLE IF NOT EXISTS orders (
