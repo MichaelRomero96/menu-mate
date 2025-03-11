@@ -1,9 +1,9 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import mealsReducer from './meals.reducer';
+import menuReducer from './menu/menu.reducer';
 
 export const store = configureStore({
   reducer: {
-    meals: mealsReducer,
+    menu: menuReducer,
   },
 });
 

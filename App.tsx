@@ -3,12 +3,16 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createStaticNavigation } from '@react-navigation/native';
 import HomeScreen from './screens/HomeScreen';
 import { PaperProvider } from 'react-native-paper';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 function App(): React.JSX.Element {
   return (
-    <PaperProvider>
-      <Navigation />
-    </PaperProvider>
+    <Provider store={store}>
+      <PaperProvider>
+        <Navigation />
+      </PaperProvider>
+    </Provider>
   );
 }
 

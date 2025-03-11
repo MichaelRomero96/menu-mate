@@ -1,22 +1,22 @@
 import { createReducer } from '@reduxjs/toolkit';
-import { MealsCountry, Meal } from '../api/theMealDB';
-import { fetchMealsByCountry, fetchMealsCountries } from './meals.actions';
+import { MealsCountry, Meal } from '../../api/theMealDB';
+import { fetchMealsByCountry, fetchMealsCountries } from './menu.actions';
 
-interface MealsState {
+interface MenuState {
   mealsCountries: MealsCountry[];
   selectedCountry: string | null;
   selectedMeals: Meal[];
   mealsByCountriesList: { country: string; meals: Meal[] }[];
 }
 
-const initialState: MealsState = {
+const initialState: MenuState = {
   mealsCountries: [],
   selectedCountry: null,
   selectedMeals: [],
   mealsByCountriesList: [],
 };
 
-export const mealsReducer = createReducer(initialState, builder => {
+export const menuReducer = createReducer(initialState, builder => {
   // Fetch Meals countries
   builder.addCase(fetchMealsCountries.pending, state => ({
     ...state,
@@ -45,4 +45,4 @@ export const mealsReducer = createReducer(initialState, builder => {
   }));
 });
 
-export default mealsReducer;
+export default menuReducer;

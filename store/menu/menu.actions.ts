@@ -1,5 +1,5 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import MealDBApi, {Meal, MealsCountry} from '../api/theMealDB';
+import MealDBApi, {Meal, MealsCountry} from '../../api/theMealDB';
 
 export const fetchMealsCountries = createAsyncThunk<MealsCountry[]>(
   'restaurant/fetchMealsCountries',
