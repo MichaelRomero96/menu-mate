@@ -8,6 +8,7 @@ import { prepareDB } from '../db/orders';
 import OrderDialog from '../components/NewOrderDialog';
 import OrderDetailDialog from '../components/NewOrderDialog';
 import { ICreateOrder, IOrder } from '../interfaces/orders';
+import Colors from '../theme/Colors';
 
 const OrdersScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -78,7 +79,7 @@ const OrdersScreen = () => {
       </Text>
 
       {/* Create Order Button */}
-      <Button mode="contained" onPress={() => setDialogVisible(true)} style={{ marginBottom: 20 }}>
+      <Button mode="contained" onPress={() => setDialogVisible(true)} style={{ marginBottom: 20, backgroundColor: Colors.primary }}>
         Create New Order
       </Button>
 
