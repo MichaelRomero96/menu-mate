@@ -10,12 +10,12 @@ const IslandNavbar = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.navigate('Menu')}>
-        <Icon name="food" size={28} color="white" />
+      <TouchableOpacity onPress={() => navigation.navigate('Menu')} style={styles.iconWrapper}>
+        <Icon name="food" size={24} color="white" />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Orders')}>
-        <Icon name="clipboard-list" size={28} color="white" />
+      <TouchableOpacity onPress={() => navigation.navigate('Orders')} style={styles.iconWrapper}>
+        <Icon name="clipboard-list" size={24} color="white" />
       </TouchableOpacity>
     </View>
   );
@@ -25,18 +25,23 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     bottom: 20,
-    left: '50%',
-    transform: [{ translateX: -50 }],
+    left: '45%',
+    transform: [{ translateX: -60 }],
     flexDirection: 'row',
     backgroundColor: Colors.primary,
+    borderRadius: 50,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    gap: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  iconWrapper: {
+    padding: 10,
     borderRadius: 30,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    gap: 30,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
   },
 });
 
