@@ -1,19 +1,21 @@
-import React, {useEffect} from 'react';
-import {View, FlatList} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../store';
-import {
-  getOrders,
-  newOrder,
-  restoreProcessingOrders,
-} from '../store/orders/orders.actions';
-import {ICreateOrder} from '../interfaces/orders';
-import {Card, Text, Button} from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store';
+import { getOrders, newOrder, restoreProcessingOrders } from '../store/orders/orders.actions';
+import { Card, Text, Button, Snackbar, Divider, IconButton } from 'react-native-paper';
 import { prepareDB } from '../db/orders';
+import OrderDialog from '../components/NewOrderDialog';
+import OrderDetailDialog from '../components/NewOrderDialog';
+import { ICreateOrder, IOrder } from '../interfaces/orders';
 
 const OrdersScreen = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const {ordersList} = useSelector((state: RootState) => state.orders);
+  const { ordersList } = useSelector((state: RootState) => state.orders);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<IOrder | null>(null);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
   useEffect(() => {
     prepareDB();
@@ -21,74 +23,104 @@ const OrdersScreen = () => {
     dispatch(getOrders());
   }, [dispatch]);
 
-  const handleNewOrder = () => {
-    const dishes = [
-      {
-        idMeal: '53060',
-        strMeal: 'Burek',
-        quantity: 1,
-        strMealThumb:
-          'https://www.themealdb.com/images/media/meals/tkxquw1628771028.jpg',
-      },
-    ];
-    const order: ICreateOrder = {
-      clientName: 'John Doe',
-      detail: {
-        dishes,
-        totalDishes: dishes.length,
-      },
-    };
+  // Handle new orders
+  const handleCreateOrder = (order: ICreateOrder) => {
     dispatch(newOrder(order)).then(() => dispatch(getOrders()));
   };
 
-  if (ordersList.length === 0) {
-    return (
-      <View style={{flex: 1, padding: 16}}>
-        <Text
-          style={{textAlign: 'center', marginBottom: 10}}>
-          There are no orders to display
-        </Text>
+  // Handle opening order details
+  const openOrderDetails = (order: IOrder) => {
+    let orderDetail;
 
-        {/* Create Order Button */}
-        <Button
-          mode="contained"
-          onPress={handleNewOrder}
-          style={{marginBottom: 20}}>
-          Create New Order
-        </Button>
-      </View>
-    );
-  }
+    if (typeof order.detail === 'string') {
+      try {
+        orderDetail = JSON.parse(order.detail);
+      } catch (error) {
+        console.warn('JSON Parse Error:', error);
+        orderDetail = { dishes: [], totalDishes: 0 };
+      }
+    } else if (typeof order.detail === 'object' && order.detail !== null) {
+      orderDetail = order.detail;
+    } else {
+      orderDetail = { dishes: [], totalDishes: 0 };
+    }
+
+    setSelectedOrder({ ...order, parsedDetail: orderDetail });
+  };
+
+  // Show Snackbar notification when order status updates
+  useEffect(() => {
+    const latestOrder = ordersList[0];
+    if (latestOrder && latestOrder.status) {
+      setSnackbarMessage(`Order ${latestOrder.clientName} is now ${latestOrder.status}`);
+      setSnackbarVisible(true);
+    }
+  }, [ordersList]);
+
+  // Order status stepper icons
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'Pending':
+        return 'clock-outline';
+      case 'Cooking':
+        return 'chef-hat';
+      case 'Ready':
+        return 'check-circle-outline';
+      default:
+        return 'help-circle-outline';
+    }
+  };
 
   return (
-    <View style={{flex: 1, padding: 16}}>
-      <Text
-        variant="titleLarge"
-        style={{fontWeight: 'bold', textAlign: 'center', marginBottom: 10}}>
+    <View style={{ flex: 1, padding: 16 }}>
+      <Text variant="titleLarge" style={{ fontWeight: 'bold', textAlign: 'center', marginBottom: 10 }}>
         Orders
       </Text>
 
       {/* Create Order Button */}
-      <Button
-        mode="contained"
-        onPress={handleNewOrder}
-        style={{marginBottom: 20}}>
+      <Button mode="contained" onPress={() => setDialogVisible(true)} style={{ marginBottom: 20 }}>
         Create New Order
       </Button>
 
-      {/* Orders List */}
+      {/* Orders List - Two Columns */}
       <FlatList
         data={ordersList}
         keyExtractor={item => item.id.toString()}
-        renderItem={({item}) => (
-          <Card mode="elevated" style={{marginBottom: 10, elevation: 3}}>
-            <Card.Content>
+        numColumns={2} // Display orders in two columns
+        columnWrapperStyle={{ justifyContent: 'space-between' }} // Add space between columns
+        renderItem={({ item }) => (
+          <Card
+            mode="elevated"
+            style={{
+              flex: 1,
+              marginBottom: 10,
+              marginHorizontal: 5,
+              elevation: 3,
+            }}
+            onPress={() => openOrderDetails(item)}
+          >
+            <Card.Content style={{ alignItems: 'center' }}>
+              <IconButton icon={getStatusIcon(item.status)} size={24} />
               <Text variant="titleMedium">{item.clientName}</Text>
               <Text>Status: {item.status}</Text>
             </Card.Content>
           </Card>
         )}
+        ItemSeparatorComponent={() => <Divider />}
       />
+
+      {/* Order Dialog for Creating New Orders */}
+      <OrderDialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)} onCreateOrder={handleCreateOrder} />
+
+      {/* Order Detail Dialog */}
+      {selectedOrder && (
+        <OrderDetailDialog order={selectedOrder} onDismiss={() => setSelectedOrder(null)} />
+      )}
+
+      {/* Snackbar Notifications */}
+      <Snackbar visible={snackbarVisible} onDismiss={() => setSnackbarVisible(false)} duration={3000}>
+        {snackbarMessage}
+      </Snackbar>
     </View>
   );
 };
