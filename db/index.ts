@@ -1,16 +1,9 @@
-import { Sequelize } from 'sequelize';
-import { Platform } from 'react-native';
-import RNFS from 'react-native-fs';
+import SQLite from 'react-native-sqlite-storage';
 
-const databasePath =
-  Platform.OS === 'ios'
-    ? `${RNFS.LibraryDirectoryPath}/database.sqlite`
-    : `${RNFS.DocumentDirectoryPath}/database.sqlite`;
+const db = SQLite.openDatabase(
+  { name: 'orders.db', location: 'default' },
+  () => console.log('Database connected!'),
+  error => console.error('Database error:', error)
+);
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: databasePath,
-  logging: false,
-});
-
-export default sequelize;
+export default db;
