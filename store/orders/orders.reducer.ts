@@ -1,7 +1,6 @@
 import {createReducer} from '@reduxjs/toolkit';
 import {IOrder} from '../../interfaces/orders';
 import {getOrders, newOrder, restoreProcessingOrders} from './orders.actions';
-import Order from '../../db/models/order';
 
 enum Status {
   NOT_INITIALIZED = 'not_initialized',
@@ -13,7 +12,7 @@ enum Status {
 interface OrdersState {
   ordersList: IOrder[];
   newOrderStatus: Status;
-  newOrder: Order | null;
+  newOrder: IOrder | null;
   restoreProcessingOrdersStatus: Status;
 }
 
@@ -28,15 +27,15 @@ export const ordersReducer = createReducer(initialState, builder => {
   // Get orders
   builder.addCase(getOrders.pending, state => ({
     ...state,
-    mealsCountries: [],
+    ordersList: [],
   }));
   builder.addCase(getOrders.rejected, state => ({
     ...state,
-    mealsCountries: [],
+    ordersList: [],
   }));
   builder.addCase(getOrders.fulfilled, (state, action) => ({
     ...state,
-    mealsCountries: action.payload,
+    ordersList: action.payload,
   }));
   // Add a new order
   builder.addCase(newOrder.pending, state => ({
@@ -47,11 +46,11 @@ export const ordersReducer = createReducer(initialState, builder => {
     ...state,
     newOrderStatus: Status.ERROR,
   }));
-  builder.addCase(newOrder.fulfilled, (state, action) => ({
-    ...state,
-    newOrderStatus: Status.SUCCESS,
-    newOrder: action.payload,
-  }));
+  builder.addCase(newOrder.fulfilled, (state, action) => {
+    state.newOrderStatus = Status.SUCCESS;
+    state.newOrder = action.payload;
+    state.ordersList.push(action.payload);
+  });
   // Restore Processing orders
   builder.addCase(restoreProcessingOrders.pending, state => ({
     ...state,

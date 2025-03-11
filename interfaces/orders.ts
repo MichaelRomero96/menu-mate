@@ -1,23 +1,32 @@
 import { Meal } from '../api/theMealDB';
 
+export interface ICreateOrder {
+	clientName: string;
+	detail: OrderDetail;
+}
+
 export interface IOrder {
 	id: number;
 	clientName: string;
-	detail: OrderDetail;
+	detail: OrderDetail | string;
 	status: OrderStatus;
-	receiptTime: Date;
-	createdAt: Date;
-	updatedAt?: Date;
+	createdAt: string;
+	updatedAt?: string;
+	receiptTime?: string;
 }
 
 export interface OrderDetail {
-	dishes: Meal[];
-	estimatedTime: number;
+	dishes: Dish[];
+	estimatedTime?: number;
 	totalDishes: number;
 }
 
+interface Dish extends Meal {
+	quantity: number;
+}
+
 export enum OrderStatus {
-	PENDING = 'pending',
-	COOKING = 'cooking',
-	READY = 'ready'
+	PENDING = 'Pending',
+	COOKING = 'Cooking',
+	READY = 'Ready'
 }

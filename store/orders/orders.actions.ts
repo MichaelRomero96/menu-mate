@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { IOrder, OrderStatus } from '../../interfaces/orders';
+import { ICreateOrder, IOrder, OrderStatus } from '../../interfaces/orders';
 import OrdersService from '../../services/orders.service';
-import Order from '../../db/models/order';
 
 export const getOrders = createAsyncThunk<IOrder[], OrderStatus | undefined>(
   'orders/get',
@@ -10,9 +9,9 @@ export const getOrders = createAsyncThunk<IOrder[], OrderStatus | undefined>(
   },
 );
 
-export const newOrder = createAsyncThunk<Order, IOrder>(
+export const newOrder = createAsyncThunk<IOrder, ICreateOrder>(
   'orders/new',
-  async (order: IOrder) => {
+  async (order: ICreateOrder) => {
     const createdOrder = await OrdersService.addNewOrder(order);
     return createdOrder;
   },
@@ -22,5 +21,14 @@ export const restoreProcessingOrders = createAsyncThunk<void, void>(
   'orders/restoreProcessing',
   async () => {
     await OrdersService.restoreProcessingOrders();
+  }
+);
+
+export const listenForOrderUpdates = createAsyncThunk<void>(
+  'orders/listenForUpdates',
+  async (_, { dispatch }) => {
+    OrdersService.on('ordersUpdated', () => {
+      dispatch(getOrders()); // Refresh orders when service updates
+    });
   }
 );

@@ -17,6 +17,7 @@
     "@redux-devtools/extension": "^3.3.0",
     "@reduxjs/toolkit": "^2.6.1",
     "@types/react-native-sqlite-storage": "^6.0.5",
+    "eventemitter3": "^5.0.1",
     "react": "19.0.0",
     "react-native": "0.78.0",
     "react-native-fbsdk-next": "^13.4.1",
