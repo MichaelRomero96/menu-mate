@@ -19,7 +19,7 @@ export interface MealsCountry {
 type Filters = 'area';
 
 class MealDBApi {
-  private static baseURL = 'www.themealdb.com/api/json/v1/1';
+  private static baseURL = 'https://www.themealdb.com/api/json/v1/1';
   private static filters = {
     area: 'a',
   };
@@ -29,7 +29,8 @@ class MealDBApi {
   }
 
   public static async getMealsCountries(): Promise<MealsCountry[]> {
-    const url = `${this.baseURL}/list.php?a=list`;
+    const url = `${MealDBApi.baseURL}/list.php?a=list`;
+    console.log(url);
     const res = await fetch(url);
 
     if (!res.ok) {
@@ -37,6 +38,7 @@ class MealDBApi {
     }
 
     const data = await res.json() as CountriesResponse;
+    console.log(data.meals);
     return data.meals;
   }
 

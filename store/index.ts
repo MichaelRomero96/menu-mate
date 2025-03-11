@@ -1,4 +1,5 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import logger from 'redux-logger';
 import menuReducer from './menu/menu.reducer';
 import ordersReducer from './orders/orders.reducer';
 
@@ -7,6 +8,8 @@ export const store = configureStore({
     menu: menuReducer,
     orders: ordersReducer,
   },
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 export type AppDispatch = typeof store.dispatch;
