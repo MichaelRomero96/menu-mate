@@ -1,41 +1,69 @@
-import { createReducer } from '@reduxjs/toolkit';
-import { fetchMealsByCountry, fetchMealsCountries } from '../menu/menu.actions';
-import { Order } from '../../interfaces/orders';
+import {createReducer} from '@reduxjs/toolkit';
+import {IOrder} from '../../interfaces/orders';
+import {getOrders, newOrder, restoreProcessingOrders} from './orders.actions';
+import Order from '../../db/models/order';
+
+enum Status {
+  NOT_INITIALIZED = 'not_initialized',
+  PROCESSING = 'processing',
+  ERROR = 'error',
+  SUCCESS = 'success',
+}
 
 interface OrdersState {
-  ordersList: Order[];
+  ordersList: IOrder[];
+  newOrderStatus: Status;
+  newOrder: Order | null;
+  restoreProcessingOrdersStatus: Status;
 }
 
 const initialState: OrdersState = {
   ordersList: [],
+  newOrderStatus: Status.NOT_INITIALIZED,
+  newOrder: null,
+  restoreProcessingOrdersStatus: Status.NOT_INITIALIZED,
 };
 
 export const ordersReducer = createReducer(initialState, builder => {
-  // Fetch Meals countries
-  builder.addCase(fetchMealsCountries.pending, state => ({
+  // Get orders
+  builder.addCase(getOrders.pending, state => ({
     ...state,
     mealsCountries: [],
   }));
-  builder.addCase(fetchMealsCountries.rejected, state => ({
+  builder.addCase(getOrders.rejected, state => ({
     ...state,
     mealsCountries: [],
   }));
-  builder.addCase(fetchMealsCountries.fulfilled, (state, action) => ({
+  builder.addCase(getOrders.fulfilled, (state, action) => ({
     ...state,
     mealsCountries: action.payload,
   }));
-  // Fetch Meal by country
-  builder.addCase(fetchMealsByCountry.pending, state => ({
+  // Add a new order
+  builder.addCase(newOrder.pending, state => ({
     ...state,
-    selectedMeals: [],
+    newOrderStatus: Status.PROCESSING,
   }));
-  builder.addCase(fetchMealsByCountry.rejected, state => ({
+  builder.addCase(newOrder.rejected, state => ({
     ...state,
-    selectedMeals: [],
+    newOrderStatus: Status.ERROR,
   }));
-  builder.addCase(fetchMealsByCountry.fulfilled, (state, action) => ({
+  builder.addCase(newOrder.fulfilled, (state, action) => ({
     ...state,
-    selectedMeals: action.payload,
+    newOrderStatus: Status.SUCCESS,
+    newOrder: action.payload,
+  }));
+  // Restore Processing orders
+  builder.addCase(restoreProcessingOrders.pending, state => ({
+    ...state,
+    restoreProcessingOrdersStatus: Status.PROCESSING,
+  }));
+  builder.addCase(restoreProcessingOrders.rejected, state => ({
+    ...state,
+    restoreProcessingOrdersStatus: Status.ERROR,
+  }));
+  builder.addCase(restoreProcessingOrders.fulfilled, (state) => ({
+    ...state,
+    restoreProcessingOrdersStatus: Status.SUCCESS,
   }));
 });
 
